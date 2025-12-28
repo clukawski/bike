@@ -42,7 +42,7 @@ module bottom_tube(rot, outer_radius, inner_radius, length, hollow=true) {
 // Generate any kind of chain/seat stay curved pipe
 module raw_stay (curve_offset, length, radius) {
     radius_stay = (curve_offset^2 + length^2) / 2 / curve_offset;
-    angle_stay = atan(length / (radius_stay - curve_offset));
+    angle_stay = asin(length / (radius_stay - curve_offset));
     rotate([90, 0, 0]) translate([-radius_stay, 0, 0]) rotate_extrude(angle=angle_stay) translate([radius_stay, 0]) circle(radius);
 }
 

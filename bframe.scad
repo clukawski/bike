@@ -76,6 +76,9 @@ trans_head=[0,-len_top,320];
 or_stay=7.9375;
 ir_stay=6.4643;
 offset_stay=150;
+offset_dropout_mount_x_r=-74;
+offset_dropout_mount_x_l=74;
+offset_seatstay_dropout=30;
 
 // Chainstay Right
 //
@@ -83,9 +86,9 @@ offset_stay=150;
 //
 // McMaster-Carr 89955K148
 len_chainstay_r=430;
-rot_chainstay_r=[110,0,-1];
-trans_chainstay_r=[-45,len_chainstay_r-10,offset_stay];
-curve_offset_chainstay_r=-26;
+rot_chainstay_r=[110,0,-5];
+trans_chainstay_r=[offset_dropout_mount_x_r,len_chainstay_r-10,offset_stay];
+curve_offset_chainstay_r=-85;
 
 // Chainstay Left
 //
@@ -93,29 +96,29 @@ curve_offset_chainstay_r=-26;
 //
 // McMaster-Carr 89955K148
 len_chainstay_l=430;
-rot_chainstay_l=[110,0,1];
-trans_chainstay_l=[45,len_chainstay_l-10,offset_stay];
-curve_offset_chainstay_l=26;
+rot_chainstay_l=[110,0,5];
+trans_chainstay_l=[offset_dropout_mount_x_l,len_chainstay_l-10,offset_stay];
+curve_offset_chainstay_l=85;
 
 // Seatstay Right
 //
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K148
-len_seatstay_r=540;
-rot_seatstay_r=[50,0,0];
-trans_seatstay_r=[-45,len_seatstay_r-120,offset_stay];
-curve_offset_seatstay_r=-37;
+len_seatstay_r=450;
+rot_seatstay_r=[29,27,-45];
+trans_seatstay_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_stay];
+curve_offset_seatstay_r=-120;
 
 // Seatstay Left
 //
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K148
-len_seatstay_l=540;
-rot_seatstay_l=[50,0,0];
-trans_seatstay_l=[45,len_seatstay_l-120,offset_stay];
-curve_offset_seatstay_l=37;
+len_seatstay_l=450;
+rot_seatstay_l=[29,-27,45];
+trans_seatstay_l=[offset_dropout_mount_x_l,len_seatstay_l-offset_seatstay_dropout,offset_stay];
+curve_offset_seatstay_l=120;
 
 // Temporary Dropout "Mounts"
 //
@@ -128,11 +131,9 @@ len_rear_hub=148;
 // Generic 1" 4130 Round  Bar
 or_dropout_mount=6.35;
 len_dropout_mount=or_stay*2;
-offset_dropout_mount_x_r=74;
-offset_dropout_mount_x_l=74;
 offset_dropout_mount_z=149;
-trans_dropout_mount_r=[-45,len_seatstay_r-115,offset_dropout_mount_z];
-trans_dropout_mount_l=[45,len_seatstay_l-115,offset_dropout_mount_z];
+trans_dropout_mount_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_dropout_mount_z];
+trans_dropout_mount_l=[offset_dropout_mount_x_l,len_seatstay_l-offset_seatstay_dropout,offset_dropout_mount_z];
 rot_dropout_mount=[0,90,0];
 
 /*
