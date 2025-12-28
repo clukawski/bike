@@ -19,6 +19,10 @@ use <bframe_parts.scad>;
   - Curve Offsets for Stays / Curved Parts (curve_offset_*)
 */
 
+// Special values for curved parts
+$fa=1;
+$fs=0.5;
+
 // Seat Tube
 //
 // Raw Material Dimensions
@@ -78,7 +82,7 @@ ir_stay=4.8768;
 offset_stay=170;
 offset_dropout_mount_x_r=-74;
 offset_dropout_mount_x_l=74;
-offset_seatstay_dropout=40;
+offset_seatstay_dropout=45;
 
 // Chainstay Right
 //
@@ -86,9 +90,9 @@ offset_seatstay_dropout=40;
 //
 // McMaster-Carr 89955K138
 len_chainstay_r=470;
-rot_chainstay_r=[110,0,-5];
+rot_chainstay_r=[110,0,-1];
 trans_chainstay_r=[offset_dropout_mount_x_r,len_chainstay_r,offset_stay];
-curve_offset_chainstay_r=-80;
+curve_offset_chainstay_r=-50;
 
 // Chainstay Left
 //
@@ -96,17 +100,17 @@ curve_offset_chainstay_r=-80;
 //
 // McMaster-Carr 89955K138
 len_chainstay_l=470;
-rot_chainstay_l=[110,0,5];
+rot_chainstay_l=[110,0,1];
 trans_chainstay_l=[offset_dropout_mount_x_l,len_chainstay_l,offset_stay];
-curve_offset_chainstay_l=80;
+curve_offset_chainstay_l=50;
 
 // Seatstay Right
 //
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K138
-len_seatstay_r=510;
-rot_seatstay_r=[60,-9,0];
+len_seatstay_r=515;
+rot_seatstay_r=[60,-8,0];
 trans_seatstay_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_stay];
 curve_offset_seatstay_r=-95;
 
@@ -115,8 +119,8 @@ curve_offset_seatstay_r=-95;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K138
-len_seatstay_l=510;
-rot_seatstay_l=[60,9,0];
+len_seatstay_l=515;
+rot_seatstay_l=[60,8,0];
 trans_seatstay_l=[offset_dropout_mount_x_l,len_seatstay_l-offset_seatstay_dropout,offset_stay];
 curve_offset_seatstay_l=95;
 
@@ -188,6 +192,7 @@ difference() {
     stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r, hollow=false);
     bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    seat_tube(hollow=false);
 }
 
 // Render Chainstay Left with Cuts
@@ -196,6 +201,7 @@ difference() {
     stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l, hollow=false);
     bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    seat_tube(hollow=false);
 }
 
 // Render Seatstay Right with Cuts
@@ -204,6 +210,7 @@ difference() {
     stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r, hollow=false);
     bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    seat_tube(hollow=false);
 }
 
 // Render Seatstay Left with Cuts
@@ -212,6 +219,7 @@ difference() {
     stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l, hollow=false);
     bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    seat_tube(hollow=false);
 }
 
 // Render Temporary Dropout "Mounts"
