@@ -11,6 +11,7 @@ or_bottom=14.2875;
 ir_bottom=13.3985;
 or_rear=7.9375;
 ir_rear=6.4643;
+
 // Part Sizes
 len_seat=564;
 len_top=640;
@@ -19,35 +20,59 @@ len_head=130;
 len_bottom=720;
 len_chainstay_r=430;
 len_chainstay_l=430;
+len_seatstay_r=540;
+len_seatstay_l=540;
+
 // Offsets
 offset_top=520;
 offset_head=320;
 offset_bottom=0;
 offset_chainstay=150;
+offset_seatstay=150;
+
 // Rotations
 rot_bb=[0,90,0];
 rot_top=[99,0,0];
 rot_bottom=[61,0,0];
 rot_chainstay_r=[110,0,-1];
 rot_chainstay_l=[110,0,1];
+rot_seatstay_r=[50,0,0];
+rot_seatstay_l=[50,0,0];
+
 // Translations
 trans_top=[0,0,offset_top];
 trans_head=[0,-len_top,offset_head];
 trans_bottom=[0,0,offset_bottom];
-trans_chainstay_r=[-41,len_chainstay_r-10,offset_chainstay];
-trans_chainstay_l=[41,len_chainstay_l-10,offset_chainstay];
-// Trig (chainstays)
+trans_chainstay_r=[-45,len_chainstay_r-10,offset_chainstay];
+trans_chainstay_l=[45,len_chainstay_l-10,offset_chainstay];
+trans_seatstay_r=[-45,len_seatstay_r-120,offset_seatstay];
+trans_seatstay_l=[45,len_seatstay_l-120,offset_seatstay];
+
+// Trig (chain / seat stays)
 $fa = 1;
 $fs = 0.5;
+
 // Right Chainstay
-curve_offset_chainstay_r=-22;
+curve_offset_chainstay_r=-26;
 radius_chainstay_r = (curve_offset_chainstay_r^2 + len_chainstay_r^2) / 2 / curve_offset_chainstay_r;
 angle_chainstay_r = atan(len_chainstay_r / (radius_chainstay_r - curve_offset_chainstay_r));
+
 // Left Chainstay
-curve_offset_chainstay_l=22;
+curve_offset_chainstay_l=26;
 radius_chainstay_l = (curve_offset_chainstay_l^2 + len_chainstay_l^2) / 2 / curve_offset_chainstay_l;
 angle_chainstay_l = atan(len_chainstay_l / (radius_chainstay_l - curve_offset_chainstay_l));
 
+// Right Seatstay
+curve_offset_seatstay_r=-37;
+radius_seatstay_r = (curve_offset_seatstay_r^2 + len_seatstay_r^2) / 2 / curve_offset_seatstay_r;
+angle_seatstay_r = atan(len_seatstay_r / (radius_seatstay_r - curve_offset_seatstay_r));
+
+// Left seatstay
+curve_offset_seatstay_l=37;
+radius_seatstay_l = (curve_offset_seatstay_l^2 + len_seatstay_l^2) / 2 / curve_offset_seatstay_l;
+angle_seatstay_l = atan(len_seatstay_l / (radius_seatstay_l - curve_offset_seatstay_l));
+
+// Parts
 
 // Seat Tube
 difference() {
@@ -144,3 +169,32 @@ difference() {
         cylinder(r=or_bb, h=len_bb, center=true);
 }
 
+// Seat Stays
+
+// Seatstay Right
+difference() {
+    // Raw Seatstay Right
+    translate(trans_seatstay_r)
+        rotate(rot_seatstay_r)
+            difference() {
+                    rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(or_rear);
+                    rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(ir_rear);
+            }
+    // Seatstay Left - Diff Total BB Tube Area
+    rotate(rot_bb)
+        cylinder(r=or_bb, h=len_bb, center=true);
+}
+
+// Seatstay Left
+difference() {
+    // Raw Seatstay Left
+    translate(trans_seatstay_l)
+        rotate(rot_seatstay_l)
+            difference() {
+                    rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(or_rear);
+                    rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(ir_rear);
+            }
+    // Seatstay Left - Diff Total BB Tube Area
+    rotate(rot_bb)
+        cylinder(r=or_bb, h=len_bb, center=true);
+}
