@@ -75,126 +75,208 @@ angle_seatstay_l = atan(len_seatstay_l / (radius_seatstay_l - curve_offset_seats
 // Parts
 
 // Seat Tube
-difference() {
-    // Raw Seat Tube
+module seat_tube(hollow=true) {
     difference() {
-        cylinder(r=or_seat, h=len_seat);
-        cylinder(r=ir_seat, h=len_seat);
+        // Raw Seat Tube
+        if (hollow==true) {
+            difference() {
+                cylinder(r=or_seat, h=len_seat);
+                cylinder(r=ir_seat, h=len_seat);
+            }
+        } else {
+            cylinder(r=or_seat, h=len_seat);
+        }
+        // Seat Tube - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
     }
-    // Seat Tube - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
 }
 
 // BB Tube
-rotate(rot_bb)
-    difference() {
-        cylinder(r=or_bb, h=len_bb, center=true);
-        cylinder(r=ir_bb, h=len_bb, center=true);
-    }
+module bb_tube(hollow=true) {
+    rotate(rot_bb)
+        if (hollow==true) {
+            difference() {
+                cylinder(r=or_bb, h=len_bb, center=true);
+                cylinder(r=ir_bb, h=len_bb, center=true);
+            }
+        } else {
+            cylinder(r=or_bb, h=len_bb, center=true);
+        }
+}
 
 // Top Tube
-difference() {
-    // Top Tube Diff Seat Tube
-    difference () { 
-        // Raw Top Tube
-        translate(trans_top)
-            rotate(rot_top)
-                difference() {
-                    cylinder(r=or_top, h=len_top);
-                    cylinder(r=ir_top, h=len_top);
-                }
-        // Top Tube - Diff Total Seat Tube Area
-        cylinder(r=or_seat, h=len_seat);
+module top_tube(hollow=true) {
+    difference() {
+        // Top Tube Diff Seat Tube
+        difference () { 
+            // Raw Top Tube
+            translate(trans_top)
+                rotate(rot_top)
+                    if (hollow==true) {
+                        difference() {
+                            cylinder(r=or_top, h=len_top);
+                            cylinder(r=ir_top, h=len_top);
+                        }
+                    } else {
+                        cylinder(r=or_top, h=len_top);
+                    }
+            // Top Tube - Diff Total Seat Tube Area
+            cylinder(r=or_seat, h=len_seat);
+        }
+        translate(trans_head)
+            cylinder(r=or_head, h=len_head);
     }
-    translate(trans_head)
-        cylinder(r=or_head, h=len_head);
 }
 
 // Head Tube
-translate(trans_head)
-    difference() {
-        cylinder(r=or_head, h=len_head);
-        cylinder(r=ir_head, h=len_head);
-    }
-
-// Bottom Tube
-difference() {
-    difference() {
-        translate(trans_bottom)
-            rotate(rot_bottom)
-                difference() {
-                    cylinder(r=or_bottom, h=len_bottom);
-                    cylinder(r=ir_bottom, h=len_bottom);
-                }
-        translate(trans_head)
-            cylinder(r=or_head, h=len_head);
-    }    // Seat Tube - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
+module head_tube(hollow=true) {
+    translate(trans_head)
+        if (hollow==true) {
+            difference() {
+                cylinder(r=or_head, h=len_head);
+                cylinder(r=ir_head, h=len_head);
+            }
+        } else {
+            cylinder(r=or_bottom, h=len_bottom);
+        }
 }
 
-// Chainstays
-//
-// Original Code:
-// rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(or_rear);
-//
-// translate([curve_offset_chainstay_l/ -1, 0, 0]) cylinder(r=or_rear, h=len_chainstay_l);
+// Bottom Tube
+module bottom_tube(hollow=true) {
+    difference() {
+        difference() {
+            translate(trans_bottom)
+                rotate(rot_bottom)
+                    if (hollow==true) {
+                        difference() {
+                            cylinder(r=or_bottom, h=len_bottom);
+                            cylinder(r=ir_bottom, h=len_bottom);
+                        }
+                    } else {
+                        cylinder(r=or_bottom, h=len_bottom);
+                    }
+            translate(trans_head)
+                cylinder(r=or_head, h=len_head);
+        }    // Seat Tube - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
+    }
+}
 
 // Chainstay Right
-difference() {
-    // Raw Chainstay Right
-    translate(trans_chainstay_r)
-        rotate(rot_chainstay_r)
-            difference() {
+module chainstay_right(hollow=true) {
+    difference() {
+        // Raw Chainstay Right
+        translate(trans_chainstay_r)
+            rotate(rot_chainstay_r)
+                if (hollow==true) {
+                    difference() {
+                        rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(or_rear);
+                        rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(ir_rear);
+                    }
+                } else {
                     rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(or_rear);
-                    rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(ir_rear);
-            }
-    // Chainstay Left - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
+                }
+        // Chainstay Right - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
+    }
 }
 
 // Chainstay Left
-difference() {
-    // Raw Chainstay Left
-    translate(trans_chainstay_l)
-        rotate(rot_chainstay_l)
-            difference() {
+module chainstay_left(hollow=true) {
+    difference() {
+        // Raw Chainstay Left
+        translate(trans_chainstay_l)
+            rotate(rot_chainstay_l)
+                if (hollow==true) {
+                    difference() {
+                        rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(or_rear);
+                        rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(ir_rear);
+                    }
+                } else {
                     rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(or_rear);
-                    rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(ir_rear);
-            }
-    // Chainstay Left - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
+                }
+        // Chainstay Left - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
+    }
 }
 
-// Seat Stays
-
 // Seatstay Right
-difference() {
-    // Raw Seatstay Right
-    translate(trans_seatstay_r)
-        rotate(rot_seatstay_r)
-            difference() {
+module seatstay_right(hollow=true) {
+    difference() {
+        // Raw Seatstay Right
+        translate(trans_seatstay_r)
+            rotate(rot_seatstay_r)
+                if (hollow==true) {
+                    difference() {
+                        rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(or_rear);
+                        rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(ir_rear);
+                    }
+                } else {
                     rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(or_rear);
-                    rotate([90, 0, 0]) translate([-radius_seatstay_r, 0, 0]) rotate_extrude(angle=angle_seatstay_r) translate([radius_seatstay_r, 0]) circle(ir_rear);
-            }
-    // Seatstay Left - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
+                }
+        // Seatstay Right - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
+    }
 }
 
 // Seatstay Left
-difference() {
-    // Raw Seatstay Left
-    translate(trans_seatstay_l)
-        rotate(rot_seatstay_l)
-            difference() {
+module seatstay_left(hollow=true) {
+    difference() {
+        // Raw Seatstay Left
+        translate(trans_seatstay_l)
+            rotate(rot_seatstay_l)
+                if (hollow==true) {
+                    difference() {
+                        rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(or_rear);
+                        rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(ir_rear);
+                    }
+                } else {
                     rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(or_rear);
-                    rotate([90, 0, 0]) translate([-radius_seatstay_l, 0, 0]) rotate_extrude(angle=angle_seatstay_l) translate([radius_seatstay_l, 0]) circle(ir_rear);
-            }
-    // Seatstay Left - Diff Total BB Tube Area
-    rotate(rot_bb)
-        cylinder(r=or_bb, h=len_bb, center=true);
+                }
+        // Seatstay Left - Diff Total BB Tube Area
+        rotate(rot_bb)
+            cylinder(r=or_bb, h=len_bb, center=true);
+    }
+}
+
+// Render Front Triangle
+seat_tube();
+bb_tube();
+top_tube();
+head_tube();
+bottom_tube();
+
+// Render Chainstays and Seatstays Minus Cuts
+
+// Chainstay Right with Cuts
+difference() {
+    chainstay_right();
+    seatstay_right(hollow=false);
+    bb_tube(hollow=false);
+}
+
+// Chainstay Left with Cuts
+difference() {
+    chainstay_left();
+    seatstay_left(hollow=false);
+    bb_tube(hollow=false);
+}
+
+// Seatstay Right with Cuts
+difference() {
+    seatstay_right();
+    chainstay_right(hollow=false);
+    seat_tube(hollow=false);
+}
+
+// Seatstay Left with Cuts
+difference() {
+    seatstay_left();
+    chainstay_left(hollow=false);
+    seat_tube(hollow=false);
 }
