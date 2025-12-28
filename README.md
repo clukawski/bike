@@ -2,6 +2,12 @@
 
 A hardtail / rigid bike frame design, produced in OpenSCAD, and  customized for specific measurements.
 
+## Design Features
+
+- EC34/EC34 Headset Compatibility [(Example)](https://www.whiteind.com/product/ec34-ec34/)
+- BSA 68mm Threaded Bottom Bracket Shell [(Example)](https://www.paragonmachineworks.com/bottom-bracket-shells/steel/steel-threaded-bb-shell-1-562-od.html)
+- Planned: [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger) derailleur hanger
+
 ## Picture
 
 We love picture. We hope you like picture too.
@@ -19,5 +25,4 @@ We love picture. We hope you like picture too.
 ### WIP
 - Making sure width between stays matches axle width (probably needs tweaking)
 - Dropouts ?? (probably the "mount" piece just needs some modifications / cuts for axle)
-- Derailleur hanger mount
-  - Planning on using [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
+- Derailleur hanger mount, planning on [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
