@@ -116,21 +116,15 @@ difference() {
 //
 // translate([curve_offset_chainstay_l/ -1, 0, 0]) cylinder(r=or_rear, h=len_chainstay_l);
 
-
 // Chainstay Right
 difference() {
     // Raw Chainstay Right
     translate(trans_chainstay_r)
         rotate(rot_chainstay_r)
             difference() {
-                {
                     rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(or_rear);
-                }
-                {
                     rotate([90, 0, 0]) translate([-radius_chainstay_r, 0, 0]) rotate_extrude(angle=angle_chainstay_r) translate([radius_chainstay_r, 0]) circle(ir_rear);
-                }
             }
-            //translate([curve_offset_chainstay_l/ -1, 0, 0]) cylinder(r=or_rear, h=len_chainstay_l);
     // Chainstay Left - Diff Total BB Tube Area
     rotate(rot_bb)
         cylinder(r=or_bb, h=len_bb, center=true);
@@ -142,14 +136,9 @@ difference() {
     translate(trans_chainstay_l)
         rotate(rot_chainstay_l)
             difference() {
-                {
                     rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(or_rear);
-                }
-                {
                     rotate([90, 0, 0]) translate([-radius_chainstay_l, 0, 0]) rotate_extrude(angle=angle_chainstay_l) translate([radius_chainstay_l, 0]) circle(ir_rear);
-                }
             }
-            //translate([curve_offset_chainstay_l/ -1, 0, 0]) cylinder(r=or_rear, h=len_chainstay_l);
     // Chainstay Left - Diff Total BB Tube Area
     rotate(rot_bb)
         cylinder(r=or_bb, h=len_bb, center=true);
