@@ -245,13 +245,34 @@ module seatstay_left(hollow=true) {
 }
 
 // Render Front Triangle
-seat_tube();
-bb_tube();
-top_tube();
-head_tube();
-bottom_tube();
 
-// Render Chainstays and Seatstays Minus Cuts
+// Seat Tube with Cuts
+difference() {
+    seat_tube();
+    bb_tube(hollow=false);
+}
+
+// Bottom Bracket Tube (No Cuts)
+bb_tube();
+
+// Top Tube with Cuts
+difference() {
+    top_tube();
+    seat_tube(hollow=false);
+    head_tube(hollow=false);
+}
+
+// Head Tube (No Cuts)
+head_tube();
+
+// Bottom Tube with Cuts
+difference() {
+    bottom_tube();
+    seat_tube(hollow=false);
+    head_tube(hollow=false);
+}
+
+// Render Rear Triangle
 
 // Chainstay Right with Cuts
 difference() {
