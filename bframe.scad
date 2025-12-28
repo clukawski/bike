@@ -1,5 +1,139 @@
-// Include part definitions, modify bframe_parts.scad to adjust measurements
+// Define bike frame properties, and render parts with intersection cuts
+//
+// This file contains 2.5-ish sections:
+// - Material / Part Definitions
+// - Rendering Front Triangle Parts / Cuts
+// - Rendering Rear Triangle Parts / Cuts
+
+// Include part modules for rendering
 use <bframe_parts.scad>;
+
+/*
+  Define Material / Part Constraints:
+  - Material Source (Link / Product Code)
+  - Part Outer Radius (or_*)
+  - Part Inner Radius (ir_*)
+  - Part Length (len_*)
+  - Rotations (rot_*)
+  - Translations / Offsets (trans_* / offset_*)
+  - Curve Offsets for Stays / Curved Parts (curve_offset_*)
+*/
+
+// Seat Tube
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K929
+len_seat=564;
+or_seat=14.2875;
+ir_seat=13.0429;
+
+// Bottom Bracket Tube
+//
+// Raw Material Dimensions
+//
+// Paragon Machineworks Steel Threaded BB Shell
+// - https://www.paragonmachineworks.com/bottom-bracket-shells/steel/steel-threaded-bb-shell-1-562-od.html
+len_bb=73;
+rot_bb=[0,90,0];
+offset_bb_x=-len_bb/2;
+trans_bb=[offset_bb_x,0,0];
+or_bb=19.8374;
+ir_bb=17.5895;
+
+// Top Tube with Cuts
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K929
+len_top=640;
+rot_top=[99,0,0];
+trans_top=[0,0,520];
+or_top=14.2875;
+ir_top=13.0429;
+
+// Bottom Tube
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K919
+len_bottom=720;
+or_bottom=14.2875;
+ir_bottom=13.3985;
+rot_bottom=[61,0,0];
+
+// Head Tube
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K689
+len_head=130;
+or_head=19.05;
+ir_head=16.9418;
+trans_head=[0,-len_top,320];
+
+// Common Stay Values
+or_stay=7.9375;
+ir_stay=6.4643;
+offset_stay=150;
+
+// Chainstay Right
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K148
+len_chainstay_r=430;
+rot_chainstay_r=[110,0,-1];
+trans_chainstay_r=[-45,len_chainstay_r-10,offset_stay];
+curve_offset_chainstay_r=-26;
+
+// Chainstay Left
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K148
+len_chainstay_l=430;
+rot_chainstay_l=[110,0,1];
+trans_chainstay_l=[45,len_chainstay_l-10,offset_stay];
+curve_offset_chainstay_l=26;
+
+// Seatstay Right
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K148
+len_seatstay_r=540;
+rot_seatstay_r=[50,0,0];
+trans_seatstay_r=[-45,len_seatstay_r-120,offset_stay];
+curve_offset_seatstay_r=-37;
+
+// Seatstay Left
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K148
+len_seatstay_l=540;
+rot_seatstay_l=[50,0,0];
+trans_seatstay_l=[45,len_seatstay_l-120,offset_stay];
+curve_offset_seatstay_l=37;
+
+// Temporary Dropout "Mounts"
+//
+// 142x12 boost spacing HG freehub
+//
+// Example:
+// - Shimano Deore XT FH-M8110-B 148mm Rear hub
+//   - https://kstoerz.com/freespoke/hub/534
+len_rear_hub=148;
+// Generic 1" 4130 Round  Bar
+or_dropout_mount=6.35;
+len_dropout_mount=or_stay*2;
+offset_dropout_mount_x_r=74;
+offset_dropout_mount_x_l=74;
+offset_dropout_mount_z=149;
+trans_dropout_mount_r=[-45,len_seatstay_r-115,offset_dropout_mount_z];
+trans_dropout_mount_l=[45,len_seatstay_l-115,offset_dropout_mount_z];
+rot_dropout_mount=[0,90,0];
 
 /*
   Render Front Triangle:
@@ -10,32 +144,32 @@ use <bframe_parts.scad>;
   - Head Tube
 */
 
-// Seat Tube with Cuts
+// Render Bottom Bracket Tube (No Cuts)
+bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb);
+
+// Render Seat Tube with Cuts
 difference() {
-    seat_tube();
-    bb_tube(hollow=false);
+    seat_tube(or_seat, ir_seat, len_seat);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 }
 
-// Bottom Bracket Tube (No Cuts)
-bb_tube();
-
-// Top Tube with Cuts
+// Render Top Tube with Cuts
 difference() {
-    top_tube();
+    top_tube(trans_top, rot_top, or_top, ir_top, len_top);
+    seat_tube(or_seat, ir_seat, len_seat, hollow=false);
+    head_tube(trans_head, or_head, ir_head, len_head, hollow=false);
+}
+
+// Render Bottom Tube with Cuts
+difference() {
+    bottom_tube(rot_bottom, or_bottom, ir_bottom, len_bottom);
     seat_tube(hollow=false);
-    head_tube(hollow=false);
+    head_tube(trans_head, or_head, ir_head, len_head, hollow=false);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
 }
 
-// Bottom Tube with Cuts
-difference() {
-    bottom_tube();
-    seat_tube(hollow=false);
-    head_tube(hollow=false);
-    bb_tube(hollow=false);
-}
-
-// Head Tube (No Cuts)
-head_tube();
+// Render Head Tube (No Cuts)
+head_tube(trans_head, or_head, ir_head, len_head);
 
 /*
   Render Rear Triangle:
@@ -47,42 +181,44 @@ head_tube();
   - Derailleur Hanger
 */
 
-// Chainstay Right with Cuts
+// Render Chainstay Right with Cuts
 difference() {
-    chainstay_right();
-    seatstay_right(hollow=false);
-    bb_tube(hollow=false);
-	dropout_mount_r();
+    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r);
+    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r, hollow=false);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
 }
 
-// Chainstay Left with Cuts
+// Render Chainstay Left with Cuts
 difference() {
-    chainstay_left();
-    seatstay_left(hollow=false);
-    bb_tube(hollow=false);
-	dropout_mount_l();
+    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l);
+    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l, hollow=false);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
 }
 
-// Seatstay Right with Cuts
+// Render Seatstay Right with Cuts
 difference() {
-    seatstay_right();
-    chainstay_right(hollow=false);
-    seat_tube(hollow=false);
-	dropout_mount_r();
+    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r);
+    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r, hollow=false);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
 }
 
-// Seatstay Left with Cuts
+// Render Seatstay Left with Cuts
 difference() {
-    seatstay_left();
-    chainstay_left(hollow=false);
-    seat_tube(hollow=false);
-	dropout_mount_l();
+    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l);
+    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l, hollow=false);
+    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
 }
 
 // Render Temporary Dropout "Mounts"
-
+//
 // Right Dropout "Mount"
-dropout_mount_r();
+dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
 
+// Render Temporary Dropout "Mounts"
+//
 // Left Dropout "Mount"
-dropout_mount_l();
+dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
