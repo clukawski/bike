@@ -258,6 +258,7 @@ difference() {
     bottom_tube();
     seat_tube(hollow=false);
     head_tube(hollow=false);
+    bb_tube(hollow=false);
 }
 
 // Render Rear Triangle
