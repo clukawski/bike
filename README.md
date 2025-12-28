@@ -24,8 +24,8 @@ We love picture. We hope you like picture too.
 
 ### WIP
 - [ ] Seat stay / chain stay adjustments
-  - [ ] Ensure right (drive side) seatstay / chainstay is offset enough for freehub cassete
-  - [ ] Ensure width between stays matches freehub / axle width (probably needs tweaking)
+  - [ ] Ensure right (drive side) seatstay / chainstay is offset enough for freehub cassette
+  - [ ] Ensure width between stays matches freehub axle width (probably needs tweaking)
 - [ ] Dropouts ?? (probably the "mount" piece just needs some modifications / cuts for axle)
 - [ ] Derailleur hanger mount, planning on [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
 - [ ] Cable routing
