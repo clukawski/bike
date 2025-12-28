@@ -18,12 +18,12 @@ We love picture. We hope you like picture too.
 
 ### Completed
 
-- Front and rear triangle
-- Components are modularized, and measurements / transforms are defined per part
-- All components rendered with cuts so they can be rendered individually and 3D printed to use as live mocks
+- [x] Front and rear triangle
+- [x] Components are modularized, and measurements / transforms are defined per part
+- [x] All components rendered with cuts so they can be rendered individually and 3D printed to use as live mocks
 
 ### WIP
-- Making sure width between stays matches freehub / axle width (probably needs tweaking)
-- Dropouts ?? (probably the "mount" piece just needs some modifications / cuts for axle)
-- Derailleur hanger mount, planning on [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
-- Cable routing
+- [ ] Making sure width between stays matches freehub / axle width (probably needs tweaking)
+- [ ] Dropouts ?? (probably the "mount" piece just needs some modifications / cuts for axle)
+- [ ] Derailleur hanger mount, planning on [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
+- [ ] Cable routing
