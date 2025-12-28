@@ -11,6 +11,6 @@
 |                (bsa) bb tube |  19.8374 |        2.2479 |  17.5895 |       ??? |  See below |  (unit) $11.95 |
 | (ec34/ec34 reamed) head tube |    19.05 |         2.413 |  16.9418 |       ??? |  89955K689 |    (ft) $21.15 |
 |    chainstay / rear triangle |   7.9375 |        1.4732 |   6.4643 |       ??? |  89955K148 |    (ft) $12.02 |
-
+|    chainstay / rear triangle |     6.35 |        1.4732 |   4.8768 |       ??? |  89955K138 |    (ft) $12.21 |
 #### bottom bracket shell
 https://www.paragonmachineworks.com/bottom-bracket-shells/steel/steel-threaded-bb-shell-1-562-od.html
