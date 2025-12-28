@@ -1,6 +1,6 @@
 # bike
 
-A hardtail / rigid bike frame design, produced in OpenSCAD, and  customized for specific measurements.
+A ***\~\~work in progress\~\~*** hardtail / rigid bike frame design, produced in OpenSCAD, and  customized for specific measurements.
 
 ## Design Features
 
