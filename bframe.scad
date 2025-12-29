@@ -43,7 +43,7 @@ rot_bb=[0,90,0];
 offset_bb_x=-len_bb/2;
 trans_bb=[offset_bb_x,0,0];
 or_bb=19.8374;
-ir_bb=17.5895;
+ir_bb=17;
 
 // Top Tube with Cuts
 //
@@ -61,7 +61,7 @@ ir_top=13.0429;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K919
-len_bottom=720;
+len_bottom=710;
 or_bottom=14.2875;
 ir_bottom=13.3985;
 rot_bottom=[60,0,0];
@@ -74,7 +74,7 @@ rot_bottom=[60,0,0];
 len_head=95;
 or_head=19.05;
 ir_head=16.9418;
-trans_head=[0,-len_top,322];
+trans_head=[0,-len_top,325];
 
 // Common Stay Values
 or_stay=6.35;
@@ -90,7 +90,7 @@ offset_seatstay_dropout=45;
 //
 // McMaster-Carr 89955K138
 len_chainstay_r=470;
-rot_chainstay_r=[110,0,-1];
+rot_chainstay_r=[110,0,-0.5];
 trans_chainstay_r=[offset_dropout_mount_x_r,len_chainstay_r,offset_stay];
 curve_offset_chainstay_r=-50;
 
@@ -100,7 +100,7 @@ curve_offset_chainstay_r=-50;
 //
 // McMaster-Carr 89955K138
 len_chainstay_l=470;
-rot_chainstay_l=[110,0,1];
+rot_chainstay_l=[110,0,0.5];
 trans_chainstay_l=[offset_dropout_mount_x_l,len_chainstay_l,offset_stay];
 curve_offset_chainstay_l=50;
 
@@ -132,12 +132,14 @@ curve_offset_seatstay_l=95;
 // - Shimano Deore XT FH-M8110-B 148mm Rear hub
 //   - https://kstoerz.com/freespoke/hub/534
 len_rear_hub=148;
-// Generic 1" 4130 Round  Bar
-or_dropout_mount=6.35;
+// Generic 3/4" 4130 Round  Bar
+or_dropout_mount=9.525;
 len_dropout_mount=or_stay*2;
 offset_dropout_mount_z=170;
 trans_dropout_mount_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_dropout_mount_z];
+trans_dropout_mount_cut_r=[offset_dropout_mount_x_r-or_dropout_mount/2,len_seatstay_r-offset_seatstay_dropout,offset_dropout_mount_z];
 trans_dropout_mount_l=[offset_dropout_mount_x_l,len_seatstay_l-offset_seatstay_dropout,offset_dropout_mount_z];
+trans_dropout_mount_cut_l=[offset_dropout_mount_x_l+or_dropout_mount/2,len_seatstay_l-offset_seatstay_dropout,offset_dropout_mount_z];
 rot_dropout_mount=[0,90,0];
 
 /*
@@ -225,9 +227,14 @@ difference() {
 // Render Temporary Dropout "Mounts"
 //
 // Right Dropout "Mount"
-dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
-
+difference() {
+    dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    dropout_mount(trans=trans_dropout_mount_cut_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount/2);
+}
 // Render Temporary Dropout "Mounts"
 //
 // Left Dropout "Mount"
-dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+difference() {
+    dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+    dropout_mount(trans=trans_dropout_mount_cut_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount/2);
+}
