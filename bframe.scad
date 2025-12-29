@@ -50,7 +50,7 @@ ir_bb=17.5895;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K929
-len_top=640;
+len_top=620;
 rot_top=[95,0,0];
 trans_top=[0,0,450];
 or_top=14.2875;
@@ -61,10 +61,10 @@ ir_top=13.0429;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K919
-len_bottom=730;
+len_bottom=720;
 or_bottom=14.2875;
 ir_bottom=13.3985;
-rot_bottom=[61,0,0];
+rot_bottom=[60,0,0];
 
 // Head Tube
 //
