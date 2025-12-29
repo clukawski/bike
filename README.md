@@ -18,7 +18,7 @@ We love picture. We hope you like picture too.
 
 ### Completed
 
-- [x] Simplified and rear triangle
+- [x] Front and rear triangle
 - [x] Components are modularized, and measurements / transforms are defined per part
 - [x] All components rendered with cuts so they can be rendered individually and 3D printed to use as live mocks
 - [x] Seat stay / chain stay adjustments
