@@ -21,12 +21,12 @@ We love picture. We hope you like picture too.
 - [x] Simplified and rear triangle
 - [x] Components are modularized, and measurements / transforms are defined per part
 - [x] All components rendered with cuts so they can be rendered individually and 3D printed to use as live mocks
+- [x] Seat stay / chain stay adjustments
+  - [x] Ensure right (drive side) seatstay / chainstay is offset enough for freehub cassette
+  - [x] Ensure width between stays matches freehub axle width (probably needs tweaking)
+  - [x] Tweak length / positioning of stays for 27.5" wheels
 
 ### WIP
-- [ ] Seat stay / chain stay adjustments
-  - [ ] Ensure right (drive side) seatstay / chainstay is offset enough for freehub cassette
-  - [ ] Ensure width between stays matches freehub axle width (probably needs tweaking)
-  - [ ] Tweak length of stays for 27.5/29" wheels
 - [ ] Dropouts ?? (probably the "mount" piece just needs some modifications / cuts for axle)
 - [ ] Derailleur hanger mount, planning on [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger)
 - [ ] Cable routing
