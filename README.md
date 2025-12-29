@@ -8,9 +8,7 @@ A ***\~\~work in progress\~\~*** hardtail / rigid bike frame design, produced in
 - BSA 68mm Threaded Bottom Bracket Shell [(Example)](https://www.paragonmachineworks.com/bottom-bracket-shells/steel/steel-threaded-bb-shell-1-562-od.html)
 - Planned: [GDH](https://velo-orange.com/blogs/theveloorangeblog/introducing-the-gdh-the-galactic-derailleur-hanger) derailleur hanger
 
-## Picture
-
-We love picture. We hope you like picture too.
+## Sample Render
 
 ![Hardtail / Rigid Bike Frame Render](static/render.png)
 
