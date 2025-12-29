@@ -28,7 +28,7 @@ $fs=0.5;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K929
-len_seat=564;
+len_seat=520;
 or_seat=14.2875;
 ir_seat=13.0429;
 
@@ -51,8 +51,8 @@ ir_bb=17.5895;
 //
 // McMaster-Carr 89955K929
 len_top=640;
-rot_top=[99,0,0];
-trans_top=[0,0,520];
+rot_top=[95,0,0];
+trans_top=[0,0,450];
 or_top=14.2875;
 ir_top=13.0429;
 
@@ -61,7 +61,7 @@ ir_top=13.0429;
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K919
-len_bottom=720;
+len_bottom=730;
 or_bottom=14.2875;
 ir_bottom=13.3985;
 rot_bottom=[61,0,0];
@@ -71,10 +71,10 @@ rot_bottom=[61,0,0];
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K689
-len_head=130;
+len_head=95;
 or_head=19.05;
 ir_head=16.9418;
-trans_head=[0,-len_top,320];
+trans_head=[0,-len_top,322];
 
 // Common Stay Values
 or_stay=6.35;
