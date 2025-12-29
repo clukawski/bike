@@ -8,6 +8,11 @@
 // Include part modules for rendering
 use <bframe_parts.scad>;
 
+function bend_offset_a(angle_a, len_c)
+    = (((len_c*sin(90-angle_a))/sin(90))*sin(angle_a))/sin(90-angle_a);
+function bend_offset_b(angle_a, len_c)
+    = ((len_c*sin(90-angle_a))/sin(90));
+
 /*
   Define Material / Part Constraints:
   - Material Source (Link / Product Code)
@@ -43,7 +48,7 @@ rot_bb=[0,90,0];
 offset_bb_x=-len_bb/2;
 trans_bb=[offset_bb_x,0,0];
 or_bb=19.8374;
-ir_bb=17;
+ir_bb=17.5895;
 
 // Top Tube with Cuts
 //
@@ -77,6 +82,10 @@ ir_head=16.9418;
 trans_head=[0,-len_top,325];
 
 // Common Stay Values
+//
+// Raw Material Dimensions
+//
+// McMaster-Carr 89955K138
 or_stay=6.35;
 ir_stay=4.8768;
 offset_stay=170;
@@ -84,25 +93,21 @@ offset_dropout_mount_x_r=-74;
 offset_dropout_mount_x_l=74;
 offset_seatstay_dropout=45;
 
-// Chainstay Right
-//
-// Raw Material Dimensions
-//
-// McMaster-Carr 89955K138
-len_chainstay_r=470;
-rot_chainstay_r=[110,0,-0.5];
-trans_chainstay_r=[offset_dropout_mount_x_r,len_chainstay_r,offset_stay];
-curve_offset_chainstay_r=-50;
+// Chainstays
+bend_radius_chainstay=50.8;
+bend_angle_chainstay=10;
+len_chainstay=440;
+len_chainstay_divisor=20;
+// Angle Relative to Bottom Bracket Tube
+angle_chainstay=20;
 
-// Chainstay Left
-//
-// Raw Material Dimensions
-//
-// McMaster-Carr 89955K138
-len_chainstay_l=470;
-rot_chainstay_l=[110,0,0.5];
-trans_chainstay_l=[offset_dropout_mount_x_l,len_chainstay_l,offset_stay];
-curve_offset_chainstay_l=50;
+// Seatstays
+bend_radius_seatstay=50.8;
+bend_angle_seatstay=10;
+len_seatstay=440;
+len_seatstay_divisor=20;
+// Angle Relative to Bottom Bracket Tube
+angle_seatstay=20;
 
 // Seatstay Right
 //
@@ -135,11 +140,11 @@ len_rear_hub=148;
 // Generic 3/4" 4130 Round  Bar
 or_dropout_mount=9.525;
 len_dropout_mount=or_stay*2;
-offset_dropout_mount_z=170;
-trans_dropout_mount_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_dropout_mount_z];
-trans_dropout_mount_cut_r=[offset_dropout_mount_x_r-or_dropout_mount/2,len_seatstay_r-offset_seatstay_dropout,offset_dropout_mount_z];
-trans_dropout_mount_l=[offset_dropout_mount_x_l,len_seatstay_l-offset_seatstay_dropout,offset_dropout_mount_z];
-trans_dropout_mount_cut_l=[offset_dropout_mount_x_l+or_dropout_mount/2,len_seatstay_l-offset_seatstay_dropout,offset_dropout_mount_z];
+offset_dropout_mount_z=150;
+trans_dropout_mount_r=[bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_cut_r=[bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_l=[-bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_cut_l=[-bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
 rot_dropout_mount=[0,90,0];
 
 /*
@@ -188,41 +193,157 @@ head_tube(trans_head, or_head, ir_head, len_head);
   - Derailleur Hanger
 */
 
-// Render Chainstay Right with Cuts
-difference() {
-    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r);
-    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r, hollow=false);
-    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
-	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
-    seat_tube(hollow=false);
+module wall2D(thickness)
+  difference()
+  {
+    offset(thickness)
+      children(0);
+    children(0);
+  }
+ 
+module elbowinator(angle, bendRadius, clipBounds=1000, convexity=4)
+  intersection(convexity=convexity)
+  {
+    rotate_extrude(convexity=convexity)
+      translate([bendRadius,0,0])
+        children(0);
+    linear_extrude(height=clipBounds, slices=2, center=true)   
+      wedge2D(angle, clipBounds);
+  }
+
+module wedge2D(angle, r, nSides=3) 
+  polygon(points=concat([[0,0]], [for(i=[0:nSides]) r*[cos(i/nSides*angle), sin(i/nSides*angle)]]), convexity=4);
+
+module genstay(rot, bend_radius, bend_angle, divisor, length, length_bb, outer_radius_bb, hollow=true) {
+
+    rotate(rot) {
+        offset_stay_total_x_r=(length_bb/2)-8;
+        offset_stay_total_y_r=outer_radius_bb/2;
+        len_first_straight=length/divisor;
+
+        // First Segment
+        translate([-offset_stay_total_x_r,offset_stay_total_y_r+bend_offset_a(bend_angle, bend_radius),0])
+            tube_hollow([0,0,0], [-90,0,0], or_stay, ir_stay, len_first_straight, hollow);
+
+        // First Elbow
+        translate([
+          -offset_stay_total_x_r-bend_radius,
+          offset_stay_total_y_r+bend_offset_a(bend_angle, bend_radius)+len_first_straight,
+          0,
+        ])
+            rotate([0,0,0])
+                elbowinator(angle=bend_angle, bendRadius=bend_radius)
+                    wall2D(thickness=or_stay-ir_stay)
+                        circle(r=ir_stay);
+
+        // Second Segment
+        trans_second_straight=[
+            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius)),
+            offset_stay_total_y_r+len_first_straight+bend_offset_a(bend_angle, bend_radius)*2,
+            0,
+        ];
+        len_second_straight=len_first_straight*(divisor-(divisor*0.38));
+        tube_hollow(trans_second_straight, [-90,0,bend_angle], or_stay, ir_stay, len_second_straight, hollow);
+
+        // Second Elbow
+        translate([
+            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight)+bend_radius,
+            (offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2),
+            0,
+        ])
+        rotate([0,180,10])
+                elbowinator(angle=bend_angle, bendRadius=bend_radius)
+                    wall2D(thickness=or_stay-ir_stay)
+                        circle(r=ir_stay);
+
+        // Third Segment
+        trans_third_straight=[
+            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight),
+            offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2,
+            0,
+        ];
+        len_third_straight=len_first_straight*(divisor-(divisor*0.72));
+        tube_hollow(trans_third_straight, [-90,0,0], or_stay, ir_stay, len_third_straight, hollow);
+    }
 }
 
-// Render Chainstay Left with Cuts
-difference() {
-    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l);
-    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l, hollow=false);
-    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
-	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
-    seat_tube(hollow=false);
-}
+// Render Chainstay Right
+genstay(
+	[20,0,0],
+	bend_radius_chainstay,
+	bend_angle_chainstay,
+	len_chainstay_divisor,
+	len_chainstay,
+	len_bb,
+	or_bb);
 
-// Render Seatstay Right with Cuts
-difference() {
-    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r);
-    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r, hollow=false);
-    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
-	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
-    seat_tube(hollow=false);
-}
+// Render Chainstay Left
+genstay(
+	[-20,180,0],
+	bend_radius_chainstay,
+	bend_angle_chainstay,
+	len_chainstay_divisor,
+	len_chainstay,
+	len_bb,
+	or_bb);
 
-// Render Seatstay Left with Cuts
-difference() {
-    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l);
-    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l, hollow=false);
-    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
-	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
-    seat_tube(hollow=false);
-}
+translate([0,0,2*bend_offset_a(angle_seatstay, len_seatstay)])
+    // Render Seatstay Right
+    genstay(
+        [-20,0,0],
+        bend_radius_seatstay,
+        bend_angle_seatstay,
+        len_seatstay_divisor,
+        len_seatstay,
+        len_bb,
+        or_bb);
+
+translate([0,0,2*bend_offset_a(angle_seatstay, len_seatstay)])
+    // Render seatstay Left
+    genstay(
+        [20,180,0],
+        bend_radius_seatstay,
+        bend_angle_seatstay,
+        len_seatstay_divisor,
+        len_seatstay,
+        len_bb,
+        or_bb);
+
+//// Render Chainstay Right with Cuts
+//difference() {
+//    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r);
+//    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r, hollow=false);
+//    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+//	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+//    seat_tube(hollow=false);
+//}
+//
+//// Render Chainstay Left with Cuts
+//difference() {
+//    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l);
+//    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l, hollow=false);
+//    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+//	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+//    seat_tube(hollow=false);
+//}
+
+//// Render Seatstay Right with Cuts
+//difference() {
+//    stay(trans_seatstay_r, rot_seatstay_r, curve_offset_seatstay_r, or_stay, ir_stay, len_seatstay_r);
+//    stay(trans_chainstay_r, rot_chainstay_r, curve_offset_chainstay_r, or_stay, ir_stay, len_chainstay_r, hollow=false);
+//    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+//	dropout_mount(trans=trans_dropout_mount_r, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+//    seat_tube(hollow=false);
+//}
+//
+//// Render Seatstay Left with Cuts
+//difference() {
+//    stay(trans_seatstay_l, rot_seatstay_l, curve_offset_seatstay_l, or_stay, ir_stay, len_seatstay_l);
+//    stay(trans_chainstay_l, rot_chainstay_l, curve_offset_chainstay_l, or_stay, ir_stay, len_chainstay_l, hollow=false);
+//    bb_tube(trans_bb, rot_bb, or_bb, ir_bb, len_bb, hollow=false);
+//	dropout_mount(trans=trans_dropout_mount_l, rot=rot_dropout_mount, radius=or_dropout_mount, length=len_dropout_mount);
+//    seat_tube(hollow=false);
+//}
 
 // Render Temporary Dropout "Mounts"
 //
