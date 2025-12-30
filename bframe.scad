@@ -103,14 +103,14 @@ angle_chainstay=20;
 
 // Seatstays
 bend_radius_seatstay=50.8;
-bend_angle_seatstay=19;
+bend_angle_seatstay=45;
 len_seatstay=485;
 len_seatstay_divisor=14;
-len_seatstay_first_segment_multiplier=1.1;
+len_seatstay_first_segment_multiplier=0.9;
 // Angle Relative to Bottom Bracket Tube
 angle_seatstay=31;
-bend_positions_seatstay=[0.61,0.49];
-or_mult_seatstay_seat_tube=2.1;
+bend_positions_seatstay=[0.90,0.28];
+or_mult_seatstay_seat_tube=2.5;
 
 // Seatstay Right
 //
@@ -299,12 +299,12 @@ genstay(
     ir_stay,
 	or_bb);
 
-translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier)/4,bend_offset_b(angle_seatstay, len_seatstay)])
+translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier),bend_offset_b(angle_seatstay, len_seatstay)+15])
     // Render Seatstay Right
     genstay(
-        [-2.35,5,0],
+        [-13.25,20,0],
+//        [-2.35,5,0],
         [-angle_seatstay,0,0],
-//        [0,0,0],
         bend_radius_seatstay,
         bend_angle_seatstay,
         len_seatstay_divisor,
@@ -316,10 +316,10 @@ translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divis
         len_seatstay_first_segment_multiplier,
         bend_positions_seatstay);
 
-translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier)/4,bend_offset_b(angle_seatstay, len_seatstay-len_seatstay_first_segment_multiplier)])
+translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier),bend_offset_b(angle_seatstay, len_seatstay-len_seatstay_first_segment_multiplier)+15])
     // Render seatstay Left
     genstay(
-        [-2.35,5,0],
+        [-13.25,20,0],
         [angle_seatstay,180,0],
         bend_radius_seatstay,
         bend_angle_seatstay,
