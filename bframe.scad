@@ -97,24 +97,27 @@ offset_seatstay_dropout=45;
 bend_radius_chainstay=50.8;
 bend_angle_chainstay=10;
 len_chainstay=440;
-len_chainstay_divisor=20;
+len_chainstay_divisor=21;
 // Angle Relative to Bottom Bracket Tube
 angle_chainstay=20;
 
 // Seatstays
 bend_radius_seatstay=50.8;
-bend_angle_seatstay=10;
-len_seatstay=440;
-len_seatstay_divisor=20;
+bend_angle_seatstay=19;
+len_seatstay=485;
+len_seatstay_divisor=14;
+len_seatstay_first_segment_multiplier=1.1;
 // Angle Relative to Bottom Bracket Tube
-angle_seatstay=20;
+angle_seatstay=31;
+bend_positions_seatstay=[0.61,0.49];
+or_mult_seatstay_seat_tube=2.1;
 
 // Seatstay Right
 //
 // Raw Material Dimensions
 //
 // McMaster-Carr 89955K138
-len_seatstay_r=515;
+len_seatstay_r=500;
 rot_seatstay_r=[60,-8,0];
 trans_seatstay_r=[offset_dropout_mount_x_r,len_seatstay_r-offset_seatstay_dropout,offset_stay];
 curve_offset_seatstay_r=-95;
@@ -141,10 +144,10 @@ len_rear_hub=148;
 or_dropout_mount=9.525;
 len_dropout_mount=or_stay*2;
 offset_dropout_mount_z=150;
-trans_dropout_mount_r=[bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
-trans_dropout_mount_cut_r=[bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
-trans_dropout_mount_l=[-bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
-trans_dropout_mount_cut_l=[-bend_offset_a(bend_angle_chainstay, len_chainstay),bend_offset_b(angle_chainstay, len_chainstay),bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_r=[len_rear_hub/2,bend_offset_b(angle_chainstay, len_chainstay)+or_dropout_mount*1.1,bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_cut_r=[len_rear_hub/2,bend_offset_b(angle_chainstay, len_chainstay)+or_dropout_mount*1.1,bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_l=[-len_rear_hub/2,bend_offset_b(angle_chainstay, len_chainstay)+or_dropout_mount*1.1,bend_offset_a(angle_chainstay, len_chainstay)];
+trans_dropout_mount_cut_l=[-len_rear_hub/2,bend_offset_b(angle_chainstay, len_chainstay)+or_dropout_mount*1.1,bend_offset_a(angle_chainstay, len_chainstay)];
 rot_dropout_mount=[0,90,0];
 
 /*
@@ -214,16 +217,17 @@ module elbowinator(angle, bendRadius, clipBounds=1000, convexity=4)
 module wedge2D(angle, r, nSides=3) 
   polygon(points=concat([[0,0]], [for(i=[0:nSides]) r*[cos(i/nSides*angle), sin(i/nSides*angle)]]), convexity=4);
 
-module genstay(rot, bend_radius, bend_angle, divisor, length, length_bb, outer_radius_bb, hollow=true) {
+module genstay(trans, rot, bend_radius, bend_angle, divisor, length, length_bb, outer_radius, inner_radius, outer_radius_bb, first_segment_multiplier=1, bends=[0.38,0.72], hollow=true) {
 
     rotate(rot) {
-        offset_stay_total_x_r=(length_bb/2)-8;
+        offset_stay_total_x_r=(length_bb/2)-(divisor/2);
         offset_stay_total_y_r=outer_radius_bb/2;
         len_first_straight=length/divisor;
+        length_first_offset=len_first_straight*first_segment_multiplier-len_first_straight;
 
         // First Segment
-        translate([-offset_stay_total_x_r,offset_stay_total_y_r+bend_offset_a(bend_angle, bend_radius),0])
-            tube_hollow([0,0,0], [-90,0,0], or_stay, ir_stay, len_first_straight, hollow);
+        translate([-offset_stay_total_x_r,offset_stay_total_y_r+bend_offset_a(bend_angle, bend_radius)-length_first_offset,0])
+            tube_hollow([0,0,0], [-90,0,0], outer_radius, inner_radius, first_segment_multiplier*len_first_straight, hollow);
 
         // First Elbow
         translate([
@@ -233,81 +237,100 @@ module genstay(rot, bend_radius, bend_angle, divisor, length, length_bb, outer_r
         ])
             rotate([0,0,0])
                 elbowinator(angle=bend_angle, bendRadius=bend_radius)
-                    wall2D(thickness=or_stay-ir_stay)
-                        circle(r=ir_stay);
+                    wall2D(thickness=outer_radius-inner_radius)
+                        circle(r=inner_radius);
 
         // Second Segment
         trans_second_straight=[
-            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius)),
+            -offset_stay_total_x_r-bend_radius+bend_offset_b(bend_angle, bend_radius),
             offset_stay_total_y_r+len_first_straight+bend_offset_a(bend_angle, bend_radius)*2,
             0,
         ];
-        len_second_straight=len_first_straight*(divisor-(divisor*0.38));
-        tube_hollow(trans_second_straight, [-90,0,bend_angle], or_stay, ir_stay, len_second_straight, hollow);
+        len_second_straight=len_first_straight*(divisor-(divisor*bends[0]));
+        tube_hollow(trans_second_straight, [-90,0,bend_angle], outer_radius, inner_radius, len_second_straight, hollow);
 
-        // Second Elbow
-        translate([
-            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight)+bend_radius,
-            (offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2),
-            0,
-        ])
-        rotate([0,180,10])
-                elbowinator(angle=bend_angle, bendRadius=bend_radius)
-                    wall2D(thickness=or_stay-ir_stay)
-                        circle(r=ir_stay);
+        translate(trans) {
+            // Second Elbow
+            translate([
+                -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight)+bend_radius,
+                (offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2),
+                 0,
+             ])
+                rotate([0,180,bend_angle])
+                    elbowinator(angle=bend_angle, bendRadius=bend_radius)
+                        wall2D(thickness=outer_radius-inner_radius)
+                        circle(r=inner_radius);
 
-        // Third Segment
-        trans_third_straight=[
-            -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight),
-            offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2,
-            0,
-        ];
-        len_third_straight=len_first_straight*(divisor-(divisor*0.72));
-        tube_hollow(trans_third_straight, [-90,0,0], or_stay, ir_stay, len_third_straight, hollow);
+            // Third Segment
+            trans_third_straight=[
+                -offset_stay_total_x_r-(bend_radius-bend_offset_b(bend_angle, bend_radius))-bend_offset_a(bend_angle, len_second_straight),
+                offset_stay_total_y_r+len_first_straight+len_second_straight+bend_offset_a(bend_angle, bend_radius)*2,
+                0,
+            ];
+            len_third_straight=len_first_straight*(divisor-(divisor*bends[1]));
+            tube_hollow(trans_third_straight, [-90,0,0], outer_radius, inner_radius, len_third_straight, hollow);
+        }
     }
 }
 
 // Render Chainstay Right
 genstay(
+    [0,0,0],
 	[20,0,0],
 	bend_radius_chainstay,
 	bend_angle_chainstay,
 	len_chainstay_divisor,
 	len_chainstay,
 	len_bb,
+    or_stay,
+    ir_stay,
 	or_bb);
 
 // Render Chainstay Left
 genstay(
+    [0,0,0],
 	[-20,180,0],
 	bend_radius_chainstay,
 	bend_angle_chainstay,
 	len_chainstay_divisor,
 	len_chainstay,
 	len_bb,
+    or_stay,
+    ir_stay,
 	or_bb);
 
-translate([0,0,2*bend_offset_a(angle_seatstay, len_seatstay)])
+translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier)/4,bend_offset_b(angle_seatstay, len_seatstay)])
     // Render Seatstay Right
     genstay(
-        [-20,0,0],
+        [-2.35,5,0],
+        [-angle_seatstay,0,0],
+//        [0,0,0],
         bend_radius_seatstay,
         bend_angle_seatstay,
         len_seatstay_divisor,
         len_seatstay,
-        len_bb,
-        or_bb);
+        or_top*or_mult_seatstay_seat_tube,
+        or_stay,
+        ir_stay,
+        or_top,
+        len_seatstay_first_segment_multiplier,
+        bend_positions_seatstay);
 
-translate([0,0,2*bend_offset_a(angle_seatstay, len_seatstay)])
+translate([0,-or_top/or_mult_seatstay_seat_tube-(len_seatstay/len_seatstay_divisor*len_seatstay_first_segment_multiplier)/4,bend_offset_b(angle_seatstay, len_seatstay-len_seatstay_first_segment_multiplier)])
     // Render seatstay Left
     genstay(
-        [20,180,0],
+        [-2.35,5,0],
+        [angle_seatstay,180,0],
         bend_radius_seatstay,
         bend_angle_seatstay,
         len_seatstay_divisor,
         len_seatstay,
-        len_bb,
-        or_bb);
+        or_top*or_mult_seatstay_seat_tube,
+        or_stay,
+        ir_stay,
+        or_top,
+        len_seatstay_first_segment_multiplier,
+        bend_positions_seatstay);
 
 //// Render Chainstay Right with Cuts
 //difference() {
